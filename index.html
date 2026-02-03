@@ -1,0 +1,104 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>State Economic & Tourism Dashboard (2022)</title>
+
+<script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+<script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+
+<style>
+body {
+  font-family: Inter, Arial, sans-serif;
+  background: #ffffff;
+  color: #111827;
+  margin: 32px;
+}
+h1 { margin-bottom: 4px; }
+h2 { font-size: 14px; font-weight: 400; color: #4b5563; }
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+.chart {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>State Economic & Tourism Performance Dashboard</h1>
+<h2>NSDP per capita, Tourist Arrivals & Agricultural GSVA (2022)</h2>
+
+<div class="grid">
+  <div class="chart" id="nsdp"></div>
+  <div class="chart" id="tourism"></div>
+  <div class="chart" id="gsva"></div>
+</div>
+
+<script>
+const dataUrl = "cleaned_state_data_2022.csv";
+
+vegaEmbed("#nsdp", {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": { "url": dataUrl },
+  "title": "NSDP per Capita (INR)",
+  "mark": "bar",
+  "encoding": {
+    "y": {"field": "State", "type": "nominal", "sort": "-x"},
+    "x": {"field": "NSDP_per_capita", "type": "quantitative"},
+    "tooltip": [
+      {"field": "State", "type": "nominal"},
+      {"field": "NSDP_per_capita", "type": "quantitative", "format": ","}
+    ]
+  }
+});
+
+vegaEmbed("#tourism", {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": { "url": dataUrl },
+  "title": "Tourist Arrivals (2022)",
+  "transform": [
+    {"fold": ["Domestic_Tourists", "Foreign_Tourists"], "as": ["Type", "Value"]}
+  ],
+  "mark": "bar",
+  "encoding": {
+    "x": {"field": "Type", "type": "nominal"},
+    "y": {"aggregate": "sum", "field": "Value", "type": "quantitative"},
+    "color": {
+      "field": "Type",
+      "type": "nominal",
+      "scale": {"range": ["#566472", "#9ca3af"]}
+    },
+    "tooltip": [
+      {"field": "Type", "type": "nominal"},
+      {"aggregate": "sum", "field": "Value", "type": "quantitative", "format": ","}
+    ]
+  }
+});
+
+vegaEmbed("#gsva", {
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "data": { "url": dataUrl },
+  "title": "GSVA (Agriculture)",
+  "mark": "bar",
+  "encoding": {
+    "y": {"field": "State", "type": "nominal", "sort": "-x"},
+    "x": {"field": "GSVA_Agriculture", "type": "quantitative"},
+    "tooltip": [
+      {"field": "State", "type": "nominal"},
+      {"field": "GSVA_Agriculture", "type": "quantitative", "format": ","}
+    ]
+  }
+});
+</script>
+
+</body>
+</html>
